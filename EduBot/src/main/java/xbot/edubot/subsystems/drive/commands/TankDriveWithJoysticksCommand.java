@@ -25,6 +25,8 @@ public class TankDriveWithJoysticksCommand extends BaseCommand {
     public void initialize() {
         // This code is run one time, right when the command is started.
         // You don't need to write any code here for this exercise.
+        
+        
     }
 
     @Override
@@ -35,11 +37,12 @@ public class TankDriveWithJoysticksCommand extends BaseCommand {
         // Here's how to get how far the left joystick's Y-axis is pushed:
         double leftValue = operate.gamepad.getLeftVector().y;
         // You'll need to get how far the RIGHT joystick's Y-axis is pushed as well.
-        
+        double rightValue = operate.gamepad.getRightVector().y;
         // Pass values into the DriveSubsystem so it can control motors:
         // right now, this just sends the left power to the left part of the drive. You'll
         // need to give it a right power as well.
-        drive.tankDrive(leftValue, 0);
+        
+        drive.tankDrive(leftValue, rightValue);
     }
 
 }
