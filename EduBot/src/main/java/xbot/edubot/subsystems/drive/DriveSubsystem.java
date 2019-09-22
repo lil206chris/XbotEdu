@@ -16,7 +16,8 @@ public class DriveSubsystem extends BaseSubsystem {
     public XCANTalon frontRight;
     public XCANTalon rearLeft;
     public XCANTalon rearRight;
-        
+    public boolean percisionMode = false;
+    public double Power;
     @Inject
     public DriveSubsystem(CommonLibFactory factory) {
         // instantiate speed controllers and sensors here, save them as class members        
@@ -30,9 +31,26 @@ public class DriveSubsystem extends BaseSubsystem {
         // You'll need to take these power values and assign them to all of the motors. As
         // an example, here is some code that has the frontLeft motor to spin according to
         // the value of leftPower:
-        frontLeft.simpleSet(leftPower);
-        rearLeft.simpleSet(leftPower);
-        frontRight.simpleSet(rightPower);
-        rearRight.simpleSet(rightPower);
+        frontLeft.simpleSet(leftPower * Power);
+        rearLeft.simpleSet(leftPower * Power);
+        frontRight.simpleSet(rightPower * Power);
+        rearRight.simpleSet(rightPower * Power);
+    }
+    public void SetPrecisionMode(double x)
+    {
+        Power = x;
+    }
+    public void TogglePrecisionMode()
+    {
+        if(!percisionMode)
+        {
+            SetPrecisionMode(0.5);
+            percisionMode = !percisionMode;
+        }
+        else
+        {
+            SetPrecisionMode(1);
+            percisionMode = !percisionMode;
+        }
     }
 }
