@@ -31,5 +31,8 @@ public class DriveSubsystem extends BaseSubsystem {
         // an example, here is some code that has the frontLeft motor to spin according to
         // the value of leftPower:
         frontLeft.simpleSet(leftPower);
+        rearLeft.simpleSet(leftPower);
+        frontRight.simpleSet(rightPower);
+        rearRight.simpleSet(rightPower);
     }
 }
