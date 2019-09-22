@@ -10,8 +10,10 @@ public class ArcadeDriveWithJoysticksCommand extends BaseCommand {
     DriveSubsystem drive;
     OperatorInterface operate;
     @Inject
-    public ArcadeDriveWithJoysticksCommand(DriveSubsystem driveSubsystem) {
+    public ArcadeDriveWithJoysticksCommand(DriveSubsystem driveSubsystem, OperatorInterface oi) {
         drive = driveSubsystem;
+        operate = oi;
+        this.requires(drive);
     }
     
     @Override
@@ -22,7 +24,15 @@ public class ArcadeDriveWithJoysticksCommand extends BaseCommand {
     @Override
     public void execute() 
     {
-        double leftValue = operate.gamepad.
+        if(operate.gamepad.getLeftVector().x = 0)
+        {
+            double leftPower = operate.gamepad.getLeftVector().y * (1 + operate.gamepad.getLeftVector().x);
+            double rightPower = operate.gamepad.getLeftVector().y * (1 - operate.gamepad.getLeftVector().x);
+        }
+        else if(operate)
+        double leftPower = operate.gamepad.getLeftVector().y * (1 + operate.gamepad.getLeftVector().x);
+        double rightPower = operate.gamepad.getLeftVector().y * (1 - operate.gamepad.getLeftVector().x);
+        drive.tankDrive(leftPower, rightPower);
         
     }
 
