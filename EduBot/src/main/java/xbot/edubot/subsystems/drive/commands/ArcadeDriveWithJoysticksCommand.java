@@ -24,29 +24,37 @@ public class ArcadeDriveWithJoysticksCommand extends BaseCommand {
     @Override
     public void execute() 
     {
+        double x = operate.gamepad.getLeftVector().x;
+        double y = operate.gamepad.getLeftVector().y;
         double leftPower;
         double rightPower;
-        if(operate.gamepad.getLeftVector().x <= 0)
+        if(y != 0)
         {
-            leftPower =(-1 * operate.gamepad.getLeftVector().y) + operate.gamepad.getLeftVector().x;
-            rightPower = (-1 * operate.gamepad.getLeftVector().y) - operate.gamepad.getLeftVector().x;
+            if(x != 0)
+            {
+                if(x>0)
+                {
+                    leftPower = y;
+                    rightPower = y - x;
+                }
+                else
+                {
+                    leftPower = y - x;
+                    rightPower = y;
+                }
+            }
+            else
+            {
+                leftPower = y;
+                rightPower = y;
+            }
         }
         else
         {
-            leftPower = (-1 * operate.gamepad.getLeftVector().y) - operate.gamepad.getLeftVector().x;
-            rightPower = (-1 * operate.gamepad.getLeftVector().y) + operate.gamepad.getLeftVector().x;
+            leftPower = x;
+            rightPower = -1*x;
         }
-        double max = Math.abs(leftPower);
-        if(max < Math.abs(rightPower))
-        {
-            max = Math.abs(rightPower);
-        }
-        if(max > 1)
-        {
-            leftPower /= max;
-            rightPower /= max;
-        }
-        drive.tankDrive(1.0, 1.0);
+        drive.tankDrive(leftPower, rightPower);
     }
 
 }

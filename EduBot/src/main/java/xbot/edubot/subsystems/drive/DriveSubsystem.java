@@ -17,7 +17,7 @@ public class DriveSubsystem extends BaseSubsystem {
     public XCANTalon rearLeft;
     public XCANTalon rearRight;
     public boolean percisionMode = false;
-    public double Power;
+    public double Power = 1.0;
     @Inject
     public DriveSubsystem(CommonLibFactory factory) {
         // instantiate speed controllers and sensors here, save them as class members        
