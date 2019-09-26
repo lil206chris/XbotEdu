@@ -11,6 +11,7 @@ public class DriveToPositionCommand extends BaseCommand {
     DriveSubsystem drive;
     PoseSubsystem pose;
     double goal;
+    boolean brake;
     @Inject
     public DriveToPositionCommand(DriveSubsystem driveSubsystem, PoseSubsystem pose) {
         this.drive = driveSubsystem;
@@ -26,6 +27,7 @@ public class DriveToPositionCommand extends BaseCommand {
     @Override
     public void initialize() {
         // If you have some one-time setup, do it here.
+        brake = true;
     }
 
     @Override
@@ -35,6 +37,7 @@ public class DriveToPositionCommand extends BaseCommand {
         // - Hint: use pose.getPosition() to find out where you are
         // - Gets the robot stop (or at least be moving really really slowly) at the target position
         // How you do this is up to you. If you get stuck, ask a mentor or student for some hints!
+        /** 
         if(!(((goal - .1)< pose.getPosition()) && ((goal + .1) > pose.getPosition())))
         { 
             if(isFinished())
@@ -50,6 +53,26 @@ public class DriveToPositionCommand extends BaseCommand {
                 else
                 {
                     drive.tankDrive(1, 1);
+                }
+            }
+        }
+        **/
+        if(!((goal + .2) > pose.getPosition())  &&  ((goal - .2) < pose.getPosition()))
+        {
+            drive.tankDrive(1, 1);
+        }
+        else
+        {
+            if(brake)
+            {
+                drive.tankDrive(-1, -1);
+                if(pose.getPosition() < goal)
+                {
+                    drive.tankDrive(0.05, 0.05);
+                    if((goal + .2)>pose.getPosition() && (goal - .2) < pose.getPosition())
+                    {
+                        drive.tankDrive(0,0);
+                    }
                 }
             }
         }
