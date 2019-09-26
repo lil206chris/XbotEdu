@@ -35,16 +35,22 @@ public class DriveToPositionCommand extends BaseCommand {
         // - Hint: use pose.getPosition() to find out where you are
         // - Gets the robot stop (or at least be moving really really slowly) at the target position
         // How you do this is up to you. If you get stuck, ask a mentor or student for some hints!
-        if(isFinished())
-        {
-            drive.tankDrive(-1, -1);
-        }
-        else
-        {
-            drive.tankDrive(1, 1);
-            if((goal - 2) < pose.getPosition() && goal > pose.getPosition())
+        if(!(((goal - .1)< pose.getPosition()) && ((goal + .1) > pose.getPosition())))
+        { 
+            if(isFinished())
             {
-                drive.tankDrive(.01, .01);
+                drive.tankDrive(-1, -1);
+            }
+            else
+            {
+                if((goal - 1.75) < pose.getPosition() && goal > pose.getPosition())
+                {
+                    drive.tankDrive(-0.415, -0.415);
+                }
+                else
+                {
+                    drive.tankDrive(1, 1);
+                }
             }
         }
     }
@@ -53,9 +59,8 @@ public class DriveToPositionCommand extends BaseCommand {
     public boolean isFinished() {
         // Modify this to return true once you have met your goal, 
         // and you're moving fairly slowly (ideally stopped)
-        if((goal + .1)>pose.getPosition() && (goal - .3) < pose.getPosition())
+        if((goal + .2)>pose.getPosition() && (goal - .2) < pose.getPosition())
         {
-            drive.tankDrive(-1, -1);
             return true;
         }
         return false;
