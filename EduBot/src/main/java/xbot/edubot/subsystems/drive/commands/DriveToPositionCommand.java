@@ -12,6 +12,9 @@ public class DriveToPositionCommand extends BaseCommand {
     PoseSubsystem pose;
     double goal;
     boolean brake;
+    int ticks;
+    double oldPos;
+    double v;
     @Inject
     public DriveToPositionCommand(DriveSubsystem driveSubsystem, PoseSubsystem pose) {
         this.drive = driveSubsystem;
@@ -20,6 +23,9 @@ public class DriveToPositionCommand extends BaseCommand {
     
     public void setTargetPosition(double position) {
         goal= position;
+        brake = true;
+        ticks = 0;
+        oldPos = 0;
         // This method will be called by the test, and will give you a goal distance.
         // You'll need to remember this target position and use it in your calculations.
     }
@@ -56,33 +62,41 @@ public class DriveToPositionCommand extends BaseCommand {
                 }
             }
         }
-        **/
-        if(!((goal + .2) > pose.getPosition())  &&  ((goal - .2) < pose.getPosition()))
+        
+        if((pos < goal)&&(brake))
         {
-            drive.tankDrive(1, 1);
-        }
-        else
-        {
-            if(brake)
+            if(!(isFinished()))
             {
-                drive.tankDrive(-1, -1);
-                if(pose.getPosition() < goal)
+                if(pos < (goal/2))
                 {
-                    drive.tankDrive(0.05, 0.05);
-                    if((goal + .2)>pose.getPosition() && (goal - .2) < pose.getPosition())
-                    {
-                        drive.tankDrive(0,0);
-                    }
+                    drive.tankDrive(1, 1); 
+                }
+                else
+                {
+                    drive.tankDrive(.5, .5);
                 }
             }
         }
+        else if(brake)
+        {
+            brake = false;
+            drive.tankDrive(-1, -1);
+        }
+        **/
+        ticks++;
+        double pos = pose.getPosition();
+        double scale =  (goal - pos) * .275 ;
+        v =  (pos - oldPos);
+        double power = scale * 3.75 - v * 4;
+        drive.tankDrive(power, power);
+        oldPos = pos;
     }
     
     @Override
     public boolean isFinished() {
         // Modify this to return true once you have met your goal, 
         // and you're moving fairly slowly (ideally stopped)
-        if((goal + .2)>pose.getPosition() && (goal - .2) < pose.getPosition())
+        if(((goal + .2)>pose.getPosition() && (goal - .2) < pose.getPosition()) && (Math.abs(v) < .1) )
         {
             return true;
         }
