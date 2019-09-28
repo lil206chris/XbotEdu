@@ -12,7 +12,6 @@ public class DriveToPositionCommand extends BaseCommand {
     PoseSubsystem pose;
     double goal;
     boolean brake;
-    int ticks;
     double oldPos;
     double v;
     @Inject
@@ -24,7 +23,6 @@ public class DriveToPositionCommand extends BaseCommand {
     public void setTargetPosition(double position) {
         goal= position;
         brake = true;
-        ticks = 0;
         oldPos = 0;
         // This method will be called by the test, and will give you a goal distance.
         // You'll need to remember this target position and use it in your calculations.
@@ -83,7 +81,6 @@ public class DriveToPositionCommand extends BaseCommand {
             drive.tankDrive(-1, -1);
         }
         **/
-        ticks++;
         double pos = pose.getPosition();
         double scale =  (goal - pos) * .275 ;
         v =  (pos - oldPos);
