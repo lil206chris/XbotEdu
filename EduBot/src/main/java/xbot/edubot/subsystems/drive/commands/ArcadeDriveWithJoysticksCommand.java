@@ -28,6 +28,7 @@ public class ArcadeDriveWithJoysticksCommand extends BaseCommand {
         double y = operate.gamepad.getLeftVector().y;
         double leftPower;
         double rightPower;
+        /**
         if(y != 0)
         {
             if(x != 0)
@@ -54,6 +55,9 @@ public class ArcadeDriveWithJoysticksCommand extends BaseCommand {
             leftPower = x;
             rightPower = -1*x;
         }
+        */
+        leftPower = y + x;
+        rightPower = y - x;
         drive.tankDrive(leftPower, rightPower);
     }
 

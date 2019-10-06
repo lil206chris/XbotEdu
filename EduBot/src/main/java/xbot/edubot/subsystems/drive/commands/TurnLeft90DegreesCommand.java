@@ -12,9 +12,11 @@ public class TurnLeft90DegreesCommand extends BaseCommand {
     
     DriveSubsystem drive;
     PoseSubsystem pose;
-    double orgin;
+    double origin;
     double oldAngle;
     double v;
+    double angle;
+    double goal;
     @Inject
     public TurnLeft90DegreesCommand(DriveSubsystem driveSubsystem, PoseSubsystem pose) {
         this.drive = driveSubsystem;
@@ -23,8 +25,10 @@ public class TurnLeft90DegreesCommand extends BaseCommand {
     
     @Override
     public void initialize() {
-        orgin = pose.getCurrentHeading().getValue();
-        oldAngle = orgin;
+        origin = pose.getCurrentHeading().getValue();
+        angle = origin;
+        oldAngle = origin;
+        goal = normalizeAngle(origin + 90);
     }
 
     /**
@@ -37,15 +41,37 @@ public class TurnLeft90DegreesCommand extends BaseCommand {
      **/
     @Override
     public void execute() {
-        double angle  = pose.getCurrentHeading().getValue();
-        double aa = normalizeAngle((orgin - 90) - angle);
-        double scale = (90 - (Math.abs(orgin) - Math.abs(angle)));
-        v = (Math.abs(oldAngle) - Math.abs(angle))
+        
+        angle  = pose.getCurrentHeading().getValue();
+        
+        double error = differenceAngle(goal , angle);
+        double speed = differenceAngle(angle, oldAngle);
+        System.out.println(String.format("Error:%f, Speed:%f", error, speed));
+        double power = error * 0.05 - speed *0.432;
+        System.out.println(angle);
+        drive.tankDrive( -1 *power, power);
+        oldAngle = angle;
+        
+        /** 
+        System.out.println(angle);
+        drive.tankDrive(.2, -.2);
+        */
+        
+
         
     }
-    public static double differenceInAngles(Double a1, double a2)
+    public static double differenceAngle(double Anchor, double Robot)
     {
-
+        double a = Anchor - Robot;
+        if(a > 180)
+        {
+            a += -360;
+        }
+        else if(a < -180)
+        {
+            a += 360;
+        }
+        return a;
     }
     public static double normalizeAngle(double Angle)
     {
@@ -61,5 +87,15 @@ public class TurnLeft90DegreesCommand extends BaseCommand {
         return actualAngle;
     }
 
-
+    
+    @Override
+    public boolean isFinished()
+    {
+        if(goal -.2 < angle && goal + .02 > angle)
+        {
+            return true;
+        }
+        return false;
+    }
+    
 }

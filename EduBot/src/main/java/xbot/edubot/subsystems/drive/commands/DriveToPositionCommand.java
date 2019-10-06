@@ -3,6 +3,8 @@ package xbot.edubot.subsystems.drive.commands;
 import com.google.inject.Inject;
 
 import xbot.common.command.BaseCommand;
+import xbot.common.math.PIDFactory;
+import xbot.common.math.PIDManager;
 import xbot.edubot.subsystems.drive.DriveSubsystem;
 import xbot.edubot.subsystems.pose.PoseSubsystem;
 
@@ -14,10 +16,19 @@ public class DriveToPositionCommand extends BaseCommand {
     boolean brake;
     double oldPos;
     double v;
+	PIDManager pid;
     @Inject
-    public DriveToPositionCommand(DriveSubsystem driveSubsystem, PoseSubsystem pose) {
+    public DriveToPositionCommand(DriveSubsystem driveSubsystem, PoseSubsystem pose, PIDFactory pf) {
         this.drive = driveSubsystem;
         this.pose = pose;
+        this.pid = pf.createPIDManager("DriveToPoint");
+        pid.setEnableErrorThreshold(true);
+        pid.setErrorThreshold(0.1);
+
+        pid.setEnableDerivativeThreshold(true);
+        pid.setDerivativeThreshold(0.1);
+        pid.setP(.9);
+        pid.setD(4);
     }
     
     public void setTargetPosition(double position) {
@@ -31,6 +42,7 @@ public class DriveToPositionCommand extends BaseCommand {
     @Override
     public void initialize() {
         // If you have some one-time setup, do it here.
+        pid.reset();
         brake = true;
     }
 
@@ -42,62 +54,30 @@ public class DriveToPositionCommand extends BaseCommand {
         // - Gets the robot stop (or at least be moving really really slowly) at the target position
         // How you do this is up to you. If you get stuck, ask a mentor or student for some hints!
         /** 
-        if(!(((goal - .1)< pose.getPosition()) && ((goal + .1) > pose.getPosition())))
-        { 
-            if(isFinished())
-            {
-                drive.tankDrive(-1, -1);
-            }
-            else
-            {
-                if((goal - 1.75) < pose.getPosition() && goal > pose.getPosition())
-                {
-                    drive.tankDrive(-0.415, -0.415);
-                }
-                else
-                {
-                    drive.tankDrive(1, 1);
-                }
-            }
-        }
-        
-        if((pos < goal)&&(brake))
-        {
-            if(!(isFinished()))
-            {
-                if(pos < (goal/2))
-                {
-                    drive.tankDrive(1, 1); 
-                }
-                else
-                {
-                    drive.tankDrive(.5, .5);
-                }
-            }
-        }
-        else if(brake)
-        {
-            brake = false;
-            drive.tankDrive(-1, -1);
-        }
-        **/
         double pos = pose.getPosition();
         double scale =  (goal - pos) * .275 ;
         v =  (pos - oldPos);
-        double power = scale * 3.75 - v * 4;
+        double power = scale * 3.75 - v * -4;
         drive.tankDrive(power, power);
         oldPos = pos;
+        */
+        double currentPosition = pose.getPosition();
+        double power = pid.calculate(goal, currentPosition);
+        drive.tankDrive(power, power);
     }
     
     @Override
     public boolean isFinished() {
         // Modify this to return true once you have met your goal, 
         // and you're moving fairly slowly (ideally stopped)
+        /**
         if(((goal + .2)>pose.getPosition() && (goal - .2) < pose.getPosition()) && (Math.abs(v) < .1) )
         {
             return true;
         }
         return false;
+        */
+        return pid.isOnTarget();
     }
 
 }

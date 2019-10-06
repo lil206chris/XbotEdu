@@ -38,8 +38,9 @@ public class DriveSubsystem extends BaseSubsystem {
     }
     public void SetPrecisionMode(double x)
     {
-        Power = x;
+            Power = x;
     }
+
     public void TogglePrecisionMode()
     {
         if(!percisionMode)
